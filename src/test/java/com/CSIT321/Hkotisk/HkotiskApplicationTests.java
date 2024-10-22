@@ -1,10 +1,10 @@
-package com.CSIT321.DeliverYey;
+package com.CSIT321.Hkotisk;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DeliverYeyApplicationTests {
+class HkotiskApplicationTests {
 
 	@Test
 	void contextLoads() {

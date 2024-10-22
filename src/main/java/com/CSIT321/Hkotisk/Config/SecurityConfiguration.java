@@ -39,7 +39,7 @@ public class SecurityConfiguration {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request-> request.requestMatchers("/auth/signin", "/auth/signup", "/public/**").permitAll()
-                        .requestMatchers("/order/**", "/student/**",  "/delivery/**", "/product/**").hasRole("STUDENT")
+                        .requestMatchers("/order/**", "/student/**", "/product/**").hasRole("STUDENT")
                         .requestMatchers("/staff/**").hasRole("STAFF")
                         .anyRequest().authenticated())
                 .sessionManagement(manager->manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
