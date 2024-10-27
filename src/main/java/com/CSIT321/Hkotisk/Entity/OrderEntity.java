@@ -1,42 +1,38 @@
 package com.CSIT321.Hkotisk.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.io.Serializable;
 
+import java.io.Serializable;
+import java.util.Date;
 
 @Entity
+@Table(name = "`order`")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tblorder")
+@NoArgsConstructor
 public class OrderEntity implements Serializable {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "order_id")
     private int orderId;
 
-    @Column(name = "contact_information")
-    private String contactInfo;
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Email should be valid")
+    private String email;
 
-    private String location;
+    @NotBlank(message = "Order status is mandatory")
+    private String orderStatus;
 
-    private double price;
+    @PastOrPresent(message = "Order date cannot be in the future")
+    @Column(name = "order_date")
+    private Date orderDate;
 
-    private double totalAmount;
-
-    private String foodName;
-
-    private int quantity;
-
-    @Column(name = "payment_method")
-    private String paymentMethod;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sid", referencedColumnName = "sid", unique = true)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private StudentEntity student;
+    @PositiveOrZero(message = "Total cost must be zero or positive")
+    @Column(name = "total_cost")
+    private double totalCost;
 }

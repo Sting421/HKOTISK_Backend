@@ -1,32 +1,34 @@
 package com.CSIT321.Hkotisk.Entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
 import java.io.Serializable;
 
 @Entity
+@Table(name = "Product")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tblproducts")
+@NoArgsConstructor
 public class ProductEntity implements Serializable {
+    private static final long serialVersionUID = -7446162716367847201L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
     private int productId;
 
-    private String name;
-
-    private String filename;
-
+    @NotBlank(message = "Description is mandatory")
     private String description;
 
+    @NotBlank(message = "Product name is mandatory")
+    private String productName;
+
+    @Positive(message = "Price must be positive")
     private double price;
 
-    private String category;
-
+    @Min(value = 0, message = "Quantity must be zero or positive")
     private int quantity;
+
+    @Lob
+    private byte[] productImage;
 }

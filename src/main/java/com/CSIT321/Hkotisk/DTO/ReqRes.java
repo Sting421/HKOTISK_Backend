@@ -1,12 +1,14 @@
 package com.CSIT321.Hkotisk.DTO;
 
-import com.CSIT321.Hkotisk.Entity.StudentEntity;
+import com.CSIT321.Hkotisk.Entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,13 +21,14 @@ public class ReqRes implements Serializable {
     private String token;
     private String refreshToken;
     private String expirationTime;
-    private String idNumber;
-    private String firstName;
-    private String lastName;
-    private String password;
     private String email;
+    private String username;
+    private String password;
     private String role;
-    private StudentEntity student;
-    private List<StudentEntity> studentsList;
+    private User student;
+    private List<User> userList;
+    private LocalDateTime timestamp;
+    private String requestId;
+    private Map<String, Object> additionalData;
 
 }

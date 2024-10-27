@@ -1,6 +1,7 @@
 package com.CSIT321.Hkotisk.Config;
 
-import com.CSIT321.Hkotisk.Service.StudentService;
+import com.CSIT321.Hkotisk.Filter.JwtAuthFilter;
+import com.CSIT321.Hkotisk.Service.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private final StudentService studentService;
+    private final MyUserDetailService userDetailService;
 
 
 
@@ -30,29 +31,29 @@ public class SecurityConfiguration {
     JwtAuthFilter jwtAuthFilter;
 
     @Autowired
-    public SecurityConfiguration(StudentService studentService) {
-        this.studentService = studentService;
+    public SecurityConfiguration(MyUserDetailService userDetailService) {
+        this.userDetailService = userDetailService;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(request-> request.requestMatchers("/auth/signin", "/auth/signup", "/public/**").permitAll()
-                        .requestMatchers("/order/**", "/student/**", "/product/**").hasRole("STUDENT")
-                        .requestMatchers("/staff/**").hasRole("STAFF")
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/resources/**", "/static/**", "/public/**", "/auth/**", "/auth/signup", "/auth/signin", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/user/**", "/auth/signout").hasAnyRole("STUDENT", "STAFF")
+                        .requestMatchers("/staff/**", "/auth/signout").hasRole("STAFF")
                         .anyRequest().authenticated())
-                .sessionManagement(manager->manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()).addFilterBefore(
-                        jwtAuthFilter, UsernamePasswordAuthenticationFilter.class
-                );
+                .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(studentService);
+        daoAuthenticationProvider.setUserDetailsService(userDetailService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return daoAuthenticationProvider;
     }
