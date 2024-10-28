@@ -103,19 +103,20 @@ public class UserController {
     @GetMapping("/cart")
     public ResponseEntity<CartResponse> viewCart(Authentication auth) throws IOException {
         logger.info("Inside View cart request method");
+        System.out.println(auth.getName());
         CartResponse resp = new CartResponse();
         try {
-            logger.info("Inside View cart request method 2");
             User loggedUser = userRepo.findByUsername(auth.getName())
-                    .orElseThrow(() -> new UserCustomException(auth.getName()));
+                    .orElseThrow(() -> new UserCustomException("User not found: " + auth.getName()));
             resp.setStatus(ResponseCode.SUCCESS_CODE);
             resp.setMessage(ResponseCode.VW_CART_MESSAGE);
             resp.setOblist(cartRepo.findByEmail(loggedUser.getEmail()));
         } catch (Exception e) {
+            logger.severe("Error retrieving cart items: " + e.getMessage());
             throw new CartCustomException("Unable to retrieve cart items, please try again");
         }
 
-        return new ResponseEntity<CartResponse>(resp, HttpStatus.OK);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
     @PutMapping("/cart")

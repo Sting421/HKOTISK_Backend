@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.CSIT321.Hkotisk.Constant.ResponseCode;
-import com.CSIT321.Hkotisk.DTO.DeleteProductDTO;
-import com.CSIT321.Hkotisk.DTO.UpdateOrderDTO;
-import com.CSIT321.Hkotisk.DTO.UpdateProductDTO;
 import com.CSIT321.Hkotisk.Entity.OrderEntity;
 import com.CSIT321.Hkotisk.Entity.ProductEntity;
 import com.CSIT321.Hkotisk.Exception.OrderCustomException;
@@ -25,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.CSIT321.Hkotisk.DTO.ProductDTO;
 
 @RestController
 @RequestMapping("/staff")
@@ -42,16 +38,16 @@ public class StaffController {
 
 
     @PostMapping("/product")
-    public ResponseEntity<ProductResponse> addProduct(@Valid @ModelAttribute ProductDTO productDTO) throws IOException {
+    public ResponseEntity<ProductResponse> addProduct(@Valid @RequestBody ProductEntity input) throws IOException {
         ProductResponse resp = new ProductResponse();
         try {
             ProductEntity prod = new ProductEntity();
-            prod.setDescription(productDTO.getDescription());
-            prod.setPrice(productDTO.getPrice());
-            prod.setProductName(productDTO.getProductName());
-            prod.setQuantity(productDTO.getQuantity());
-            if (productDTO.getProdImage() != null) {
-                prod.setProductImage(productDTO.getProdImage().getBytes());
+            prod.setDescription(input.getDescription());
+            prod.setPrice(input.getPrice());
+            prod.setProductName(input.getProductName());
+            prod.setQuantity(input.getQuantity());
+            if (input.getProductImage() != null) {
+                prod.setProductImage(input.getProductImage());
             }
             prodRepo.save(prod);
             resp.setStatus(ResponseCode.SUCCESS_CODE);
@@ -64,13 +60,13 @@ public class StaffController {
     }
 
    @PutMapping("/product")
-    public ResponseEntity<ServerResponse> updateProducts(@Valid @ModelAttribute UpdateProductDTO productDTO) throws IOException {
+    public ResponseEntity<ServerResponse> updateProducts(@Valid @RequestBody ProductEntity productDTO) throws IOException {
         ServerResponse resp = new ServerResponse();
         try {
             ProductEntity prod;
-            if (productDTO.getProdImage() != null) {
+            if (productDTO.getProductImage() != null) {
                 prod = new ProductEntity(productDTO.getProductId(), productDTO.getDescription(), productDTO.getProductName(),
-                        productDTO.getPrice(), productDTO.getQuantity(), productDTO.getProdImage().getBytes());
+                        productDTO.getPrice(), productDTO.getQuantity(), productDTO.getProductImage());
             } else {
                 ProductEntity prodOrg = prodRepo.findByProductId(productDTO.getProductId());
                 prod = new ProductEntity(productDTO.getProductId(), productDTO.getDescription(), productDTO.getProductName(),
@@ -85,7 +81,7 @@ public class StaffController {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
     @DeleteMapping("/product")
-    public ResponseEntity<ProductResponse> delProduct(@Valid @ModelAttribute DeleteProductDTO productDTO) throws IOException {
+    public ResponseEntity<ProductResponse> delProduct(@Valid @RequestBody ProductEntity productDTO) throws IOException {
         ProductResponse resp = new ProductResponse();
         try {
             prodRepo.deleteByProductId(productDTO.getProductId());
@@ -123,7 +119,7 @@ public class StaffController {
     }
 
     @PostMapping("/order")
-    public ResponseEntity<ServerResponse> updateOrders(@Valid @ModelAttribute UpdateOrderDTO orderDTO) throws IOException {
+    public ResponseEntity<ServerResponse> updateOrders(@Valid @RequestBody OrderEntity orderDTO) throws IOException {
         ServerResponse resp = new ServerResponse();
         try {
             OrderEntity pc = ordRepo.findByOrderId(orderDTO.getOrderId());

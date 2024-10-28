@@ -1,6 +1,6 @@
 package com.CSIT321.Hkotisk.Config;
 
-import com.CSIT321.Hkotisk.Filter.JwtAuthFilter;
+import com.CSIT321.Hkotisk.Filter.JwtFilter;
 import com.CSIT321.Hkotisk.Service.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,26 +23,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfiguration {
 
-    private final MyUserDetailService userDetailService;
-
-
+    @Autowired
+    private MyUserDetailService userDetailsService;
 
     @Autowired
-    JwtAuthFilter jwtAuthFilter;
-
-    @Autowired
-    public SecurityConfiguration(MyUserDetailService userDetailService) {
-        this.userDetailService = userDetailService;
-    }
+    JwtFilter jwtAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/resources/**", "/static/**", "/public/**", "/auth/**", "/auth/signup", "/auth/signin", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/user/**", "/auth/signout").hasAnyRole("STUDENT", "STAFF")
-                        .requestMatchers("/staff/**", "/auth/signout").hasRole("STAFF")
+                        .requestMatchers("/resources/**", "/static/**", "/public/**", "/auth/**", "/auth/signup", "/auth/signin", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/login").permitAll()
+                        .requestMatchers("/user/**", "/auth/signout", "/user/products", "/user/addToCart", "/user/cart", "/user/order").hasAnyAuthority("ROLE_STUDENT", "ROLE_STAFF")
+                        .requestMatchers("/staff/**", "/auth/signout", "/staff/product", "/staff/orders", "/staff/order").hasAuthority("ROLE_STAFF")
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
@@ -52,19 +46,16 @@ public class SecurityConfiguration {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(userDetailService);
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return daoAuthenticationProvider;
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+        provider.setUserDetailsService(userDetailsService);
+        return provider;
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+
     }
 }
