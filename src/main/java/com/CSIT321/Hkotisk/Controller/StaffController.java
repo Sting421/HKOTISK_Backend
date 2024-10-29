@@ -46,6 +46,7 @@ public class StaffController {
             prod.setPrice(input.getPrice());
             prod.setProductName(input.getProductName());
             prod.setQuantity(input.getQuantity());
+            prod.setSize(input.getSize());
             if (input.getProductImage() != null) {
                 prod.setProductImage(input.getProductImage());
             }
@@ -59,18 +60,18 @@ public class StaffController {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
-   @PutMapping("/product")
+    @PutMapping("/product")
     public ResponseEntity<ServerResponse> updateProducts(@Valid @RequestBody ProductEntity productDTO) throws IOException {
         ServerResponse resp = new ServerResponse();
         try {
             ProductEntity prod;
             if (productDTO.getProductImage() != null) {
                 prod = new ProductEntity(productDTO.getProductId(), productDTO.getDescription(), productDTO.getProductName(),
-                        productDTO.getPrice(), productDTO.getQuantity(), productDTO.getProductImage());
+                        productDTO.getPrice(), productDTO.getQuantity(), productDTO.getSize(),productDTO.getProductImage());
             } else {
                 ProductEntity prodOrg = prodRepo.findByProductId(productDTO.getProductId());
                 prod = new ProductEntity(productDTO.getProductId(), productDTO.getDescription(), productDTO.getProductName(),
-                        productDTO.getPrice(), productDTO.getQuantity(), prodOrg.getProductImage());
+                        productDTO.getPrice(), productDTO.getQuantity(), productDTO.getSize(), prodOrg.getProductImage());
             }
             prodRepo.save(prod);
             resp.setStatus(ResponseCode.SUCCESS_CODE);
@@ -81,10 +82,10 @@ public class StaffController {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
     @DeleteMapping("/product")
-    public ResponseEntity<ProductResponse> delProduct(@Valid @RequestBody ProductEntity productDTO) throws IOException {
+    public ResponseEntity<ProductResponse> delProduct(@RequestParam int productId) throws IOException {
         ProductResponse resp = new ProductResponse();
         try {
-            prodRepo.deleteByProductId(productDTO.getProductId());
+            prodRepo.deleteByProductId(productId);
             resp.setStatus(ResponseCode.SUCCESS_CODE);
             resp.setMessage(ResponseCode.DEL_SUCCESS_MESSAGE);
         } catch (Exception e) {

@@ -1,6 +1,7 @@
 package com.CSIT321.Hkotisk.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
@@ -34,6 +35,9 @@ public class CartEntity implements Serializable {
     @Column(name = "product_id")
     private int productId;
 
+
     private String productName;
+
+    private String productSize;
 
 }

@@ -87,6 +87,7 @@ public class UserController {
             buf.setPrice(cartItem.getPrice());
             buf.setProductId(Integer.parseInt(productId));
             buf.setProductName(cartItem.getProductName());
+            buf.setProductSize(cartItem.getSize());
             Date date = new Date();
             buf.setDateAdded(date);
 
