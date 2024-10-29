@@ -2,6 +2,7 @@ package com.CSIT321.Hkotisk.Controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -22,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+
 
 @RestController
 @RequestMapping("/staff")
@@ -51,7 +54,9 @@ public class StaffController {
             prod.setPrice(input.getPrice());
             prod.setProductName(input.getProductName());
             prod.setQuantity(input.getQuantity());
-            prod.setSizes(input.getSizes());
+            if (input.getSizes() != null) {
+                prod.setSizes(Arrays.stream(input.getSizes()).map(String::toUpperCase).toArray(String[]::new));
+            }
             prod.setCategory(input.getCategory());
             if (input.getProductImage() != null) {
                 prod.setProductImage(input.getProductImage());

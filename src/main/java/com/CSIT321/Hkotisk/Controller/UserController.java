@@ -78,6 +78,7 @@ public class UserController {
     @PostMapping("/addToCart")
     public ResponseEntity<ServerResponse> addToCart(@RequestBody AddToCartDTO cart, Authentication auth) throws IOException {
         ServerResponse resp = new ServerResponse();
+        cart.setSize(cart.getSize().toUpperCase());
         try {
             User loggedUser = userRepo.findByEmail(auth.getName())
                     .orElseThrow(() -> new UserCustomException(auth.getName()));
