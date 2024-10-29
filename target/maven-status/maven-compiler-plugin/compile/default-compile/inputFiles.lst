@@ -1,16 +1,11 @@
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Config/CorsConfig.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Config/SecurityConfiguration.java
-/Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Config/SwaggerConfig.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Constant/ResponseCode.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Constant/WebConstants.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Controller/AuthController.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Controller/StaffController.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Controller/UserController.java
-/Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/DTO/DeleteProductDTO.java
-/Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/DTO/ProductDTO.java
-/Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/DTO/UpdateOrderDTO.java
-/Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/DTO/UpdateProductDTO.java
-/Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Entity/Authorities.java
+/Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/DTO/ReqRes.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Entity/CartEntity.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Entity/OrderEntity.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Entity/ProductEntity.java
@@ -20,7 +15,7 @@
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Exception/OrderCustomException.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Exception/ProductCustomException.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Exception/UserCustomException.java
-/Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Filter/JwtAuthFilter.java
+/Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Filter/JwtFilter.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/HkotiskApplication.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Repository/CartRepository.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Repository/OrderRepository.java
@@ -34,6 +29,6 @@
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Response/Response.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Response/ServerResponse.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Response/ViewOrderResponse.java
+/Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Service/JWTService.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Service/MyUserDetailService.java
 /Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Service/MyUserDetails.java
-/Users/jeremiatuban/Desktop/coding/Spingboot/HKOTISK_Backend/src/main/java/com/CSIT321/Hkotisk/Utility/JwtUtil.java

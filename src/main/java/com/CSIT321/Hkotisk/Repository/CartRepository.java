@@ -6,11 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Transactional
 public interface CartRepository extends JpaRepository<CartEntity, Long> {
     List<CartEntity> findByEmail(String email);
+
+    Optional<CartEntity> findByEmailAndProductIdAndProductSize(String email, int productId, String productSize);
 
     CartEntity findByCartIdAndEmail(int cartId, String email);
 

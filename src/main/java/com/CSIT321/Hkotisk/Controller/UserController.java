@@ -1,14 +1,12 @@
 package com.CSIT321.Hkotisk.Controller;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import com.CSIT321.Hkotisk.Constant.ResponseCode;
 import com.CSIT321.Hkotisk.Constant.WebConstants;
+import com.CSIT321.Hkotisk.DTO.AddToCartDTO;
 import com.CSIT321.Hkotisk.Entity.CartEntity;
 import com.CSIT321.Hkotisk.Entity.OrderEntity;
 import com.CSIT321.Hkotisk.Entity.ProductEntity;
@@ -59,6 +57,10 @@ public class UserController {
     @Autowired
     private OrderRepository ordRepo;
 
+
+
+
+    // Lists All Products
     @GetMapping("/product")
     public ResponseEntity<ProductResponse> getProducts(Authentication auth) throws IOException {
         ProductResponse resp = new ProductResponse();
@@ -72,33 +74,44 @@ public class UserController {
         return new ResponseEntity<ProductResponse>(resp, HttpStatus.OK);
     }
 
-   @GetMapping("/addToCart")
-    public ResponseEntity<ServerResponse> addToCart(@RequestParam(WebConstants.PROD_ID) String productId,
-                                                    @RequestParam(name = "size", required = false) String size,
-                                                    Authentication auth) throws IOException {
-
+    // Adds a product to the cart
+    @PostMapping("/addToCart")
+    public ResponseEntity<ServerResponse> addToCart(@RequestBody AddToCartDTO cart, Authentication auth) throws IOException {
         ServerResponse resp = new ServerResponse();
         try {
-            User loggedUser = userRepo.findByUsername(auth.getName())
+            User loggedUser = userRepo.findByEmail(auth.getName())
                     .orElseThrow(() -> new UserCustomException(auth.getName()));
-            ProductEntity cartItem = prodRepo.findByProductId(Integer.parseInt(productId));
+            ProductEntity cartItem = prodRepo.findByProductId(cart.getProductId());
 
             // Check if the selected size is valid
-            if (!Arrays.asList(cartItem.getSizes()).contains(size)) {
+            if (cart.getSize() != null && !Arrays.asList(cartItem.getSizes()).contains(cart.getSize())) {
                 throw new CartCustomException("Invalid size selected");
             }
 
-            CartEntity buf = new CartEntity();
-            buf.setEmail(loggedUser.getEmail());
-            buf.setQuantity(1);
-            buf.setPrice(cartItem.getPrice());
-            buf.setProductId(Integer.parseInt(productId));
-            buf.setProductName(cartItem.getProductName());
-            buf.setProductSize(size); // Store the selected size
-            Date date = new Date();
-            buf.setDateAdded(date);
+            // Check if the item already exists in the cart
+            Optional<CartEntity> existingCartItem = cartRepo.findByEmailAndProductIdAndProductSize(
+                    loggedUser.getEmail(), cart.getProductId(), cart.getSize());
 
-            cartRepo.save(buf);
+
+
+            if (existingCartItem.isPresent()) {
+                // Update the quantity of the existing item
+                CartEntity confirmedExistingCartItem = existingCartItem.get();
+                confirmedExistingCartItem.setQuantity(confirmedExistingCartItem.getQuantity() + cart.getQuantity());
+                cartRepo.save(confirmedExistingCartItem);
+            } else {
+                // Create a new cart item
+                CartEntity buf = new CartEntity();
+                buf.setEmail(loggedUser.getEmail());
+                buf.setQuantity(cart.getQuantity());
+                buf.setPrice(cart.getPrice() != 0.0 ? cart.getPrice() : cartItem.getPrice());
+                buf.setProductId(cart.getProductId());
+                buf.setProductName(cartItem.getProductName());
+                buf.setProductSize(cart.getSize()); // Store the selected size
+                buf.setDateAdded(new Date());
+
+                cartRepo.save(buf);
+            }
 
             resp.setStatus(ResponseCode.SUCCESS_CODE);
             resp.setMessage(ResponseCode.CART_UPD_MESSAGE_CODE);
@@ -108,13 +121,14 @@ public class UserController {
         return new ResponseEntity<ServerResponse>(resp, HttpStatus.OK);
     }
 
+    // Query to get all carts belonging to an email
     @GetMapping("/cart")
     public ResponseEntity<CartResponse> viewCart(Authentication auth) throws IOException {
         logger.info("Inside View cart request method");
         System.out.println(auth.getName());
         CartResponse resp = new CartResponse();
         try {
-            User loggedUser = userRepo.findByUsername(auth.getName())
+            User loggedUser = userRepo.findByEmail(auth.getName())
                     .orElseThrow(() -> new UserCustomException("User not found: " + auth.getName()));
             resp.setStatus(ResponseCode.SUCCESS_CODE);
             resp.setMessage(ResponseCode.VW_CART_MESSAGE);
@@ -133,7 +147,7 @@ public class UserController {
 
         CartResponse resp = new CartResponse();
         try {
-            User loggedUser = userRepo.findByUsername(auth.getName())
+            User loggedUser = userRepo.findByEmail(auth.getName())
                     .orElseThrow(() -> new UserCustomException(auth.getName()));
             CartEntity studentCart = cartRepo.findByCartIdAndEmail(Integer.parseInt(cart.get("id")), loggedUser.getEmail());
             studentCart.setQuantity(Integer.parseInt(cart.get("quantity")));
@@ -155,7 +169,7 @@ public class UserController {
 
         CartResponse resp = new CartResponse();
         try {
-            User loggedUser = userRepo.findByUsername(auth.getName())
+            User loggedUser = userRepo.findByEmail(auth.getName())
                     .orElseThrow(() -> new UserCustomException(auth.getName()));
             cartRepo.deleteByCartIdAndEmail(Integer.parseInt(cartId), loggedUser.getEmail());
             List<CartEntity> studentCarts = cartRepo.findByEmail(loggedUser.getEmail());
@@ -173,7 +187,7 @@ public class UserController {
 
         ServerResponse resp = new ServerResponse();
         try {
-            User loggedUser = userRepo.findByUsername(auth.getName())
+            User loggedUser = userRepo.findByEmail(auth.getName())
                     .orElseThrow(() -> new UserCustomException(auth.getName()));
             OrderEntity po = new OrderEntity();
             po.setEmail(loggedUser.getEmail());
