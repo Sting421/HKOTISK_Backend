@@ -7,8 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -27,6 +25,7 @@ public class User implements Serializable {
 
     @NotBlank(message = "Email is mandatory")
     @Email(message = "Email should be valid")
+    @Column(unique = true)
     private String email;
 
     @NotBlank(message = "Username is mandatory")
@@ -42,5 +41,4 @@ public class User implements Serializable {
 
     @Column(name = "is_enabled")
     private boolean isEnabled;
-
 }

@@ -97,6 +97,13 @@ public class AuthController {
     public ResponseEntity<ServerResponse> addUser(@Valid @RequestBody User user) {
         ServerResponse resp = new ServerResponse();
         try {
+            // Check if the email already exists
+            if (userRepo.findByEmail(user.getEmail()).isPresent()) {
+                resp.setStatus(ResponseCode.FAILURE_CODE);
+                resp.setMessage("Email already in use");
+                return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
+            }
+
             // Encode the password before saving the user
             user.setPassword(encoder.encode(user.getPassword()));
 
@@ -106,7 +113,6 @@ public class AuthController {
             resp.setMessage(ResponseCode.STUD_REG);
 
         } catch (Exception e) {
-
             return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(resp, HttpStatus.ACCEPTED);
