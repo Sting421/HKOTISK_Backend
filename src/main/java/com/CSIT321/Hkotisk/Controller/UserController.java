@@ -1,6 +1,7 @@
 package com.CSIT321.Hkotisk.Controller;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +59,7 @@ public class UserController {
     @Autowired
     private OrderRepository ordRepo;
 
-    @GetMapping("/products")
+    @GetMapping("/product")
     public ResponseEntity<ProductResponse> getProducts(Authentication auth) throws IOException {
         ProductResponse resp = new ProductResponse();
         try {
@@ -71,8 +72,9 @@ public class UserController {
         return new ResponseEntity<ProductResponse>(resp, HttpStatus.OK);
     }
 
-    @GetMapping("/addToCart")
+   @GetMapping("/addToCart")
     public ResponseEntity<ServerResponse> addToCart(@RequestParam(WebConstants.PROD_ID) String productId,
+                                                    @RequestParam(name = "size", required = false) String size,
                                                     Authentication auth) throws IOException {
 
         ServerResponse resp = new ServerResponse();
@@ -81,13 +83,18 @@ public class UserController {
                     .orElseThrow(() -> new UserCustomException(auth.getName()));
             ProductEntity cartItem = prodRepo.findByProductId(Integer.parseInt(productId));
 
+            // Check if the selected size is valid
+            if (!Arrays.asList(cartItem.getSizes()).contains(size)) {
+                throw new CartCustomException("Invalid size selected");
+            }
+
             CartEntity buf = new CartEntity();
             buf.setEmail(loggedUser.getEmail());
             buf.setQuantity(1);
             buf.setPrice(cartItem.getPrice());
             buf.setProductId(Integer.parseInt(productId));
             buf.setProductName(cartItem.getProductName());
-            buf.setProductSize(cartItem.getSize());
+            buf.setProductSize(size); // Store the selected size
             Date date = new Date();
             buf.setDateAdded(date);
 

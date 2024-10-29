@@ -94,6 +94,11 @@ public class AuthController {
     public ResponseEntity<ServerResponse> addUser(@Valid @RequestBody User user) {
         ServerResponse resp = new ServerResponse();
         try {
+            if (userRepo.findByEmail(user.getEmail()).isPresent()) {
+                resp.setStatus(ResponseCode.FAILURE_CODE);
+                resp.setMessage("Email already in use");
+                return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
+            }
             // Encode the password before saving the user
             user.setPassword(encoder.encode(user.getPassword()));
 

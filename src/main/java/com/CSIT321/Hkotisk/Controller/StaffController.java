@@ -36,6 +36,11 @@ public class StaffController {
     @Autowired
     private CartRepository cartRepo;
 
+    @GetMapping("/products/{category}")
+    public ResponseEntity<List<ProductEntity>> getProductsByCategory(@PathVariable String category) {
+        List<ProductEntity> products = prodRepo.findByCategory(category);
+        return ResponseEntity.ok(products);
+    }
 
     @PostMapping("/product")
     public ResponseEntity<ProductResponse> addProduct(@Valid @RequestBody ProductEntity input) throws IOException {
@@ -46,7 +51,8 @@ public class StaffController {
             prod.setPrice(input.getPrice());
             prod.setProductName(input.getProductName());
             prod.setQuantity(input.getQuantity());
-            prod.setSize(input.getSize());
+            prod.setSizes(input.getSizes());
+            prod.setCategory(input.getCategory());
             if (input.getProductImage() != null) {
                 prod.setProductImage(input.getProductImage());
             }
@@ -67,11 +73,11 @@ public class StaffController {
             ProductEntity prod;
             if (productDTO.getProductImage() != null) {
                 prod = new ProductEntity(productDTO.getProductId(), productDTO.getDescription(), productDTO.getProductName(),
-                        productDTO.getPrice(), productDTO.getQuantity(), productDTO.getSize(),productDTO.getProductImage());
+                        productDTO.getPrice(), productDTO.getQuantity(), productDTO.getSizes(), productDTO.getCategory(), productDTO.getProductImage());
             } else {
                 ProductEntity prodOrg = prodRepo.findByProductId(productDTO.getProductId());
                 prod = new ProductEntity(productDTO.getProductId(), productDTO.getDescription(), productDTO.getProductName(),
-                        productDTO.getPrice(), productDTO.getQuantity(), productDTO.getSize(), prodOrg.getProductImage());
+                        productDTO.getPrice(), productDTO.getQuantity(), productDTO.getSizes(), productDTO.getCategory(), prodOrg.getProductImage());
             }
             prodRepo.save(prod);
             resp.setStatus(ResponseCode.SUCCESS_CODE);
@@ -81,6 +87,7 @@ public class StaffController {
         }
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
+
     @DeleteMapping("/product")
     public ResponseEntity<ProductResponse> delProduct(@RequestParam int productId) throws IOException {
         ProductResponse resp = new ProductResponse();
