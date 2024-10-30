@@ -78,7 +78,7 @@ public class UserController {
     @PostMapping("/addToCart")
     public ResponseEntity<ServerResponse> addToCart(@RequestBody AddToCartDTO cart, Authentication auth) throws IOException {
         ServerResponse resp = new ServerResponse();
-        if (!cart.getSize().isEmpty()){
+        if (cart.getSize() != null) {
             cart.setSize(cart.getSize().toUpperCase());
         }
         try {
@@ -95,8 +95,6 @@ public class UserController {
             Optional<CartEntity> existingCartItem = cartRepo.findByEmailAndProductIdAndProductSize(
                     loggedUser.getEmail(), cart.getProductId(), cart.getSize());
 
-
-
             if (existingCartItem.isPresent()) {
                 // Update the quantity of the existing item
                 CartEntity confirmedExistingCartItem = existingCartItem.get();
@@ -109,8 +107,11 @@ public class UserController {
                 buf.setQuantity(cart.getQuantity());
                 buf.setPrice(cart.getPrice() != 0.0 ? cart.getPrice() : cartItem.getPrice());
                 buf.setProductId(cart.getProductId());
+                buf.setProductCategory(cartItem.getCategory());
                 buf.setProductName(cartItem.getProductName());
-                buf.setProductSize(cart.getSize()); // Store the selected size
+                if (cart.getSize() != null) {
+                    buf.setProductSize(cart.getSize()); // Store the selected size
+                }
                 buf.setDateAdded(new Date());
 
                 cartRepo.save(buf);
@@ -118,7 +119,17 @@ public class UserController {
 
             resp.setStatus(ResponseCode.SUCCESS_CODE);
             resp.setMessage(ResponseCode.CART_UPD_MESSAGE_CODE);
+        } catch (UserCustomException e) {
+            logger.severe("User not found: " + e.getMessage());
+            throw new CartCustomException("Unable to add product to cart, user not found");
+        } catch (ProductCustomException e) {
+            logger.severe("Product not found: " + e.getMessage());
+            throw new CartCustomException("Unable to add product to cart, product not found");
+        } catch (CartCustomException e) {
+            logger.severe("Cart error: " + e.getMessage());
+            throw new CartCustomException("Unable to add product to cart, invalid size selected");
         } catch (Exception e) {
+            logger.severe("Unexpected error: " + e.getMessage());
             throw new CartCustomException("Unable to add product to cart, please try again");
         }
         return new ResponseEntity<ServerResponse>(resp, HttpStatus.OK);

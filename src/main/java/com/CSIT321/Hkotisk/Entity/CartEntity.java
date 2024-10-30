@@ -39,6 +39,8 @@ public class CartEntity implements Serializable {
 
     private String productName;
 
+    private String productCategory;
+
     private String productSize;
 
 }
