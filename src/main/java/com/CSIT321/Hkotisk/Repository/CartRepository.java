@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<CartEntity, Long> {
     List<CartEntity> findByEmail(String email);
 
+    List<CartEntity> findAllByEmailAndIsOrderedFalse(String email);
+
     Optional<CartEntity> findByEmailAndProductIdAndProductSize(String email, int productId, String productSize);
 
     CartEntity findByCartIdAndEmail(int cartId, String email);

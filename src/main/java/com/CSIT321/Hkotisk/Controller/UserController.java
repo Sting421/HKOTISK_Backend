@@ -146,7 +146,7 @@ public class UserController {
                     .orElseThrow(() -> new UserCustomException("User not found: " + auth.getName()));
             resp.setStatus(ResponseCode.SUCCESS_CODE);
             resp.setMessage(ResponseCode.VW_CART_MESSAGE);
-            resp.setOblist(cartRepo.findByEmail(loggedUser.getEmail()));
+            resp.setOblist(cartRepo.findAllByEmailAndIsOrderedFalse(loggedUser.getEmail()));
         } catch (Exception e) {
             logger.severe("Error retrieving cart items: " + e.getMessage());
             throw new CartCustomException("Unable to retrieve cart items, please try again");
@@ -196,9 +196,9 @@ public class UserController {
         return new ResponseEntity<CartResponse>(resp, HttpStatus.OK);
     }
 
-    @GetMapping("/order")
+    // src/main/java/com/CSIT321/Hkotisk/Controller/UserController.java
+    @PostMapping("/order")
     public ResponseEntity<ServerResponse> placeOrder(Authentication auth) throws IOException {
-
         ServerResponse resp = new ServerResponse();
         try {
             User loggedUser = userRepo.findByEmail(auth.getName())
@@ -209,14 +209,15 @@ public class UserController {
             po.setOrderDate(date);
             po.setOrderStatus(ResponseCode.ORD_STATUS_CODE);
             double total = 0;
-            List<CartEntity> studentCarts = cartRepo.findAllByEmail(loggedUser.getEmail());
+            List<CartEntity> studentCarts = cartRepo.findAllByEmailAndIsOrderedFalse(loggedUser.getEmail());
             for (CartEntity studentCart : studentCarts) {
-                total = +(studentCart.getQuantity() * studentCart.getPrice());
+                total += studentCart.getQuantity() * studentCart.getPrice();
             }
             po.setTotalCost(total);
             OrderEntity res = ordRepo.save(po);
             studentCarts.forEach(studentCart -> {
                 studentCart.setOrderId(res.getOrderId());
+                studentCart.setOrdered(true);
                 cartRepo.save(studentCart);
             });
             resp.setStatus(ResponseCode.SUCCESS_CODE);
@@ -224,6 +225,6 @@ public class UserController {
         } catch (Exception e) {
             throw new OrderCustomException("Unable to place order, please try again later");
         }
-        return new ResponseEntity<ServerResponse>(resp, HttpStatus.OK);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 }

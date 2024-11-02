@@ -43,4 +43,6 @@ public class CartEntity implements Serializable {
 
     private String productSize;
 
+    @Column(name = "is_ordered", columnDefinition = "boolean default false")
+    private boolean isOrdered;
 }
