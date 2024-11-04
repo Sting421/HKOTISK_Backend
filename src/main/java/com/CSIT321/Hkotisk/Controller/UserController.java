@@ -92,7 +92,7 @@ public class UserController {
             }
 
             // Check if the item already exists in the cart
-            Optional<CartEntity> existingCartItem = cartRepo.findByEmailAndProductIdAndProductSize(
+            Optional<CartEntity> existingCartItem = cartRepo.findByEmailAndProductIdAndProductSizeAndIsOrderedFalse(
                     loggedUser.getEmail(), cart.getProductId(), cart.getSize());
 
             if (existingCartItem.isPresent()) {
