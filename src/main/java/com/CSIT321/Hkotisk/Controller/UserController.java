@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import com.CSIT321.Hkotisk.Constant.ResponseCode;
 import com.CSIT321.Hkotisk.Constant.WebConstants;
-import com.CSIT321.Hkotisk.DTO.AddToCartDTO;
+import com.CSIT321.Hkotisk.DTO.cartDTO;
 import com.CSIT321.Hkotisk.Entity.CartEntity;
 import com.CSIT321.Hkotisk.Entity.OrderEntity;
 import com.CSIT321.Hkotisk.Entity.ProductEntity;
@@ -26,8 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -76,7 +74,7 @@ public class UserController {
 
     // Adds a product to the cart
     @PostMapping("/addToCart")
-    public ResponseEntity<ServerResponse> addToCart(@RequestBody AddToCartDTO cart, Authentication auth) throws IOException {
+    public ResponseEntity<ServerResponse> addToCart(@RequestBody cartDTO cart, Authentication auth) throws IOException {
         ServerResponse resp = new ServerResponse();
         if (cart.getSize() != null) {
             cart.setSize(cart.getSize().toUpperCase());
@@ -165,6 +163,7 @@ public class UserController {
                     .orElseThrow(() -> new UserCustomException(auth.getName()));
             CartEntity studentCart = cartRepo.findByCartIdAndEmail(Integer.parseInt(cart.get("id")), loggedUser.getEmail());
             studentCart.setQuantity(Integer.parseInt(cart.get("quantity")));
+            studentCart.setProductSize(String.valueOf(cart.get("size")).toUpperCase());
             cartRepo.save(studentCart);
             List<CartEntity> studentCarts = cartRepo.findByEmail(loggedUser.getEmail());
             resp.setStatus(ResponseCode.SUCCESS_CODE);

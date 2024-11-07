@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AddToCartDTO {
+public class cartDTO {
 
     @NotBlank(message = "Product ID is mandatory")
     private int productId;
