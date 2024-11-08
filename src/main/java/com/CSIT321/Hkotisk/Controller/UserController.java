@@ -103,7 +103,7 @@ public class UserController {
                 CartEntity buf = new CartEntity();
                 buf.setEmail(loggedUser.getEmail());
                 buf.setQuantity(cart.getQuantity());
-                buf.setPrice(cart.getPrice() != 0.0 ? cart.getPrice() : cartItem.getPrice());
+                buf.setPrice(cart.getPrice() != 0.0 ? cart.getPrice() : cartItem.getPrices()[0]);
                 buf.setProductId(cart.getProductId());
                 buf.setProductCategory(cartItem.getCategory());
                 buf.setProductName(cartItem.getProductName());

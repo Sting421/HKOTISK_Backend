@@ -51,7 +51,11 @@ public class StaffController {
         try {
             ProductEntity prod = new ProductEntity();
             prod.setDescription(input.getDescription());
-            prod.setPrice(input.getPrice());
+            prod.setPrices(input.getPrices());
+            if (input.getPrices() != null) {
+                prod.setPrices(Arrays.stream(input.getPrices()).toArray());
+                System.out.println(Arrays.toString(prod.getPrices()));
+            }
             prod.setProductName(input.getProductName());
             prod.setQuantity(input.getQuantity());
             if (input.getSizes() != null) {
@@ -78,11 +82,11 @@ public class StaffController {
             ProductEntity prod;
             if (productDTO.getProductImage() != null) {
                 prod = new ProductEntity(productDTO.getProductId(), productDTO.getDescription(), productDTO.getProductName(),
-                        productDTO.getPrice(), productDTO.getQuantity(), productDTO.getSizes(), productDTO.getCategory(), productDTO.getProductImage());
+                        productDTO.getPrices(), productDTO.getQuantity(), productDTO.getSizes(), productDTO.getCategory(), productDTO.getProductImage());
             } else {
                 ProductEntity prodOrg = prodRepo.findByProductId(productDTO.getProductId());
                 prod = new ProductEntity(productDTO.getProductId(), productDTO.getDescription(), productDTO.getProductName(),
-                        productDTO.getPrice(), productDTO.getQuantity(), productDTO.getSizes(), productDTO.getCategory(), prodOrg.getProductImage());
+                        productDTO.getPrices(), productDTO.getQuantity(), productDTO.getSizes(), productDTO.getCategory(), prodOrg.getProductImage());
             }
             prodRepo.save(prod);
             resp.setStatus(ResponseCode.SUCCESS_CODE);

@@ -25,7 +25,7 @@ public class ProductEntity implements Serializable {
 
     @Positive(message = "Price must be positive")
     @Min(1)
-    private double price;
+    private double[] prices;
 
     @Min(value = 1, message = "Quantity must be positive")
     private int quantity;
