@@ -23,8 +23,6 @@ public class ProductEntity implements Serializable {
     @NotBlank(message = "Product name is mandatory")
     private String productName;
 
-    @Positive(message = "Price must be positive")
-    @Min(1)
     private double[] prices;
 
     @Min(value = 1, message = "Quantity must be positive")

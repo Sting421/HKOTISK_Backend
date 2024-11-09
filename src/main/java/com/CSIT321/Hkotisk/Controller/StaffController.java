@@ -54,7 +54,6 @@ public class StaffController {
             prod.setPrices(input.getPrices());
             if (input.getPrices() != null) {
                 prod.setPrices(Arrays.stream(input.getPrices()).toArray());
-                System.out.println(Arrays.toString(prod.getPrices()));
             }
             prod.setProductName(input.getProductName());
             prod.setQuantity(input.getQuantity());
@@ -70,6 +69,7 @@ public class StaffController {
             resp.setMessage(ResponseCode.ADD_SUCCESS_MESSAGE);
             resp.setOblist(prodRepo.findAll());
         } catch (Exception e) {
+            e.printStackTrace(); // Log the exception for debugging
             throw new ProductCustomException("Unable to save product details, please try again");
         }
         return new ResponseEntity<>(resp, HttpStatus.OK);
