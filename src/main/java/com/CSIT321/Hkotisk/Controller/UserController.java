@@ -26,15 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -70,6 +62,20 @@ public class UserController {
             throw new ProductCustomException("Unable to retrieve products, please try again");
         }
         return new ResponseEntity<ProductResponse>(resp, HttpStatus.OK);
+    }
+    @GetMapping("/products/{id}")
+    public ResponseEntity<ProductEntity> getProductsById(@PathVariable int id) {
+        ProductEntity products = prodRepo.findByProductId(id);
+        return ResponseEntity.ok(products);
+    }
+    @GetMapping("/products/quantity/{id}")
+    public ResponseEntity<Integer> getProductQuantityById(@PathVariable int id) {
+        ProductEntity product = prodRepo.findByProductId(id);
+        if (product != null) {
+            return ResponseEntity.ok(product.getQuantity());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // Adds a product to the cart
