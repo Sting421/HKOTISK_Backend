@@ -35,4 +35,15 @@ public class ProductEntity implements Serializable {
 
     @Lob
     private byte[] productImage;
+
+    public double getPriceForSize(String size) {
+        if (sizes != null && prices != null) {
+            for (int i = 0; i < sizes.length; i++) {
+                if (sizes[i].equalsIgnoreCase(size)) {
+                    return prices[i];
+                }
+            }
+        }
+        throw new IllegalArgumentException("Size not found");
+    }
 }

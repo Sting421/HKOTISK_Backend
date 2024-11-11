@@ -15,6 +15,7 @@ import com.CSIT321.Hkotisk.Exception.CartCustomException;
 import com.CSIT321.Hkotisk.Exception.OrderCustomException;
 import com.CSIT321.Hkotisk.Exception.ProductCustomException;
 import com.CSIT321.Hkotisk.Exception.UserCustomException;
+import com.CSIT321.Hkotisk.Handler.OrderWebSocketHandler;
 import com.CSIT321.Hkotisk.Repository.CartRepository;
 import com.CSIT321.Hkotisk.Repository.OrderRepository;
 import com.CSIT321.Hkotisk.Repository.ProductRepository;
@@ -25,13 +26,16 @@ import com.CSIT321.Hkotisk.Response.ServerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends TextWebSocketHandler {
 
     private static Logger logger = Logger.getLogger(UserController.class.getName());
 
@@ -47,7 +51,12 @@ public class UserController {
     @Autowired
     private OrderRepository ordRepo;
 
+    private WebSocketSession webSocketSession;
 
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        this.webSocketSession = session;
+    }
 
 
     // Lists All Products
@@ -79,7 +88,7 @@ public class UserController {
     }
 
     // Adds a product to the cart
-    @PostMapping("/addToCart")
+    @PostMapping("/cart")
     public ResponseEntity<ServerResponse> addToCart(@RequestBody cartDTO cart, Authentication auth) throws IOException {
         ServerResponse resp = new ServerResponse();
         if (cart.getSize() != null) {
@@ -109,7 +118,7 @@ public class UserController {
                 CartEntity buf = new CartEntity();
                 buf.setEmail(loggedUser.getEmail());
                 buf.setQuantity(cart.getQuantity());
-                buf.setPrice(cart.getPrice() != 0.0 ? cart.getPrice() : cartItem.getPrices()[0]);
+                buf.setPrice(cart.getPrice() != 0.0 ? cart.getPrice() : cartItem.getPriceForSize(cart.getSize()));
                 buf.setProductId(cart.getProductId());
                 buf.setProductCategory(cartItem.getCategory());
                 buf.setProductName(cartItem.getProductName());
@@ -201,7 +210,6 @@ public class UserController {
         return new ResponseEntity<CartResponse>(resp, HttpStatus.OK);
     }
 
-    // src/main/java/com/CSIT321/Hkotisk/Controller/UserController.java
     @PostMapping("/order")
     public ResponseEntity<ServerResponse> placeOrder(Authentication auth) throws IOException {
         ServerResponse resp = new ServerResponse();
@@ -215,6 +223,9 @@ public class UserController {
             po.setOrderStatus(ResponseCode.ORD_STATUS_CODE);
             double total = 0;
             List<CartEntity> studentCarts = cartRepo.findAllByEmailAndIsOrderedFalse(loggedUser.getEmail());
+            if (studentCarts.isEmpty()) {
+                throw new OrderCustomException("No items in cart to place order");
+            }
             for (CartEntity studentCart : studentCarts) {
                 total += studentCart.getQuantity() * studentCart.getPrice();
             }
@@ -227,6 +238,11 @@ public class UserController {
             });
             resp.setStatus(ResponseCode.SUCCESS_CODE);
             resp.setMessage(ResponseCode.ORD_SUCCESS_MESSAGE);
+
+            // Send WebSocket message
+            OrderWebSocketHandler.sendMessageToAll("New order placed: " + res.getOrderId());
+
+
         } catch (Exception e) {
             throw new OrderCustomException("Unable to place order, please try again later");
         }

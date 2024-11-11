@@ -45,9 +45,9 @@ public class StaffController {
         return ResponseEntity.ok(products);
     }
     @GetMapping("/products/{id}")
-    public ResponseEntity<ProductEntity> getProductsById(@PathVariable int id) {
-        ProductEntity products = prodRepo.findByProductId(id);
-        return ResponseEntity.ok(products);
+    public ResponseEntity<ProductEntity> getProductById(@PathVariable int id) {
+        ProductEntity product = prodRepo.findByProductId(id);
+        return ResponseEntity.ok(product);
     }
 
     @GetMapping("/products/quantity/{id}")
