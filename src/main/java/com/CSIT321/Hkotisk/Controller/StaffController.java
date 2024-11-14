@@ -50,16 +50,6 @@ public class StaffController {
         return ResponseEntity.ok(product);
     }
 
-    @GetMapping("/products/quantity/{id}")
-    public ResponseEntity<Integer> getProductQuantityById(@PathVariable int id) {
-        ProductEntity product = prodRepo.findByProductId(id);
-        if (product != null) {
-            return ResponseEntity.ok(product.getQuantity());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
 
     @PostMapping("/product")
     public ResponseEntity<ProductResponse> addProduct(@Valid @RequestBody ProductEntity input) throws IOException {
@@ -73,6 +63,10 @@ public class StaffController {
             }
             prod.setProductName(input.getProductName());
             prod.setQuantity(input.getQuantity());
+            if (input.getQuantity() != null) {
+                prod.setQuantity(Arrays.stream(input.getQuantity()).toArray());
+            }
+
             if (input.getSizes() != null) {
                 prod.setSizes(Arrays.stream(input.getSizes()).map(String::toUpperCase).toArray(String[]::new));
             }
@@ -90,7 +84,6 @@ public class StaffController {
         }
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
-
 
     @PutMapping("/product")
     public ResponseEntity<ServerResponse> updateProducts(@Valid @RequestBody ProductEntity productDTO) throws IOException {
